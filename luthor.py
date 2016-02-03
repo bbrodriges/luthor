@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 import os
+import re
 
 from lxml import etree
 from lxml.etree import XMLSyntaxError
@@ -19,6 +20,7 @@ class Luthor:
         'tag': None,
         'threads': 1,
         'with_lock': True,
+        'strip_namespaces': False,
     }
 
     def extend(self, settings):
@@ -88,6 +90,7 @@ class Luthor:
                 'storage': self._storage,
                 'lock': lock,
                 'callback': self._callback,
+                'strip_namespaces': self._settings['strip_namespaces']
             })
             thread.start()
             active_threads.append(thread)
@@ -114,6 +117,9 @@ class Fetcher(Thread):
         self._storage = settings['storage']
         self._lock = settings['lock']
         self._callback = settings['callback']
+        self._strip_namespaces = settings['strip_namespaces']
+
+        self._strip_ns_re = re.compile(r'({.*?})')
 
     def run(self):
 
@@ -142,15 +148,29 @@ class Fetcher(Thread):
 
         children = {}
         for child in list(element):
-            if child.tag not in children:
-                children[child.tag] = []
-            children[child.tag].append(self.__to_dict(child))
+            tag = self.__strip_namespaces(child.tag)
+            if tag not in children:
+                children[tag] = []
+            children[tag].append(self.__to_dict(child))
+
+        attributes = {}
+        for key, value in element.attrib.items():
+            name = self.__strip_namespaces(key)
+            attributes[name] = value
 
         return {
             "attributes": element.attrib,
             "children": children,
             "content": element.text.strip() if element.text else '',
         }
+
+    def __strip_namespaces(self, text):
+
+        """
+        Strips namespaces
+        """
+
+        return text if not self._strip_namespaces else re.sub(self._strip_ns_re, '', text)
 
 
 class SyncStorage:

@@ -44,6 +44,7 @@ Params you can use:
 
 * **threads** _int_ - number of threads of parser. Default: `1`
 * **with_lock** _bool_ - wheither or not must parser use lock while data sync. It slightly decreases parsing speed but eliminates race conditions. Default: `True`
+* **strip_namespaces** _bool_ - wheither or not must parser remove namespaces from tag names before return data. Default: `False`
 
 # Response attributes
 While inherit Luthor class you can override built-in `get_record()` method to retrieve data gathered from tag.
