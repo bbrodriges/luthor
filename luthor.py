@@ -12,7 +12,7 @@ from threading import Thread, Lock
 from urllib import request
 from urllib import parse
 
-__version__ = '1.1.8'
+__version__ = '1.2.0'
 
 
 class Luthor:
@@ -25,6 +25,7 @@ class Luthor:
         'threads': 1,
         'with_lock': True,
         'strip_namespaces': False,
+        'start_line': 0,
     }
 
     _last_line = 0
@@ -98,6 +99,7 @@ class Luthor:
                 'callback': self._callback,
                 'strip_namespaces': self._settings['strip_namespaces'],
                 'last_line_fn': self.__set_last_line,
+                'start_line': self._settings['start_line']
             })
             thread.start()
             active_threads.append(thread)
@@ -142,6 +144,7 @@ class Fetcher(Thread):
         self._callback = settings['callback']
         self._strip_namespaces = settings['strip_namespaces']
         self._last_line_fn = settings['last_line_fn']
+        self._start_line = settings['start_line']
 
         self._strip_ns_re = re.compile(r'({.*?})')
 
@@ -153,7 +156,7 @@ class Fetcher(Thread):
 
         try:
             for event, element in etree.iterparse(self._content, tag=self._tag):
-                if not self._storage.is_parsed(element.sourceline):
+                if element.sourceline >= self._start_line and not self._storage.is_parsed(element.sourceline):
                     # saving sourceline
                     with self._lock:
                         self._storage.add(element.sourceline)

@@ -45,6 +45,7 @@ Params you can use:
 * **threads** _int_ - number of threads of parser. Default: `1`
 * **with_lock** _bool_ - wheither or not must parser use lock while data sync. It slightly decreases parsing speed but eliminates race conditions. Default: `True`
 * **strip_namespaces** _bool_ - wheither or not must parser remove namespaces from tag names before return data. Default: `False`
+* **start_line** _int_ - starting from which line parser will start to send results to callback function. Default: `1`
 
 # Response attributes
 While inherit Luthor class you can override built-in `get_record()` method to retrieve data gathered from tag.
@@ -52,3 +53,6 @@ While inherit Luthor class you can override built-in `get_record()` method to re
 * _attrs _dict_ - Attributes of tag. You can also use alias method ```attrs()```. Default: `{}`
 * _content _str_ - Content of tag. You can also use alias method ```content()```. Default: `''`
 * **child tags** - child tags includes into parent tag dict under corresponding keys. If there is only one child tag it will be dict, if there are multiple tags they would be list of dicts. 
+
+# Tips and tricks
+You can use ```last_line()``` parser method to get line number of last accessed tag as pass it again to new instance of parser in case of some fatal exception or error.
