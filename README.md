@@ -49,6 +49,6 @@ Params you can use:
 # Response attributes
 While inherit Luthor class you can override built-in `get_record()` method to retrieve data gathered from tag.
 
-* **children** _dict_ - Dict with chilren tag names as keys and lists of tags response attributes as values. Default: `{}`
-* **attributes** _dict_ - Attributes of tag. Default: `{}`
-* **content** _str_ - Content of tag. Default: `''`
+* _attrs _dict_ - Attributes of tag. Default: `{}`
+* _content _str_ - Content of tag. Default: `''`
+* **child tags** - child tags includes into parent tag dict under corresponding keys. If there is only one child tag it will be dict, if there are multiple tags they would be list of dicts. 

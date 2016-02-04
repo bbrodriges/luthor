@@ -3,6 +3,8 @@
 import os
 import re
 
+from collections import Counter
+
 from lxml import etree
 from lxml.etree import XMLSyntaxError
 from threading import Thread, Lock
@@ -10,7 +12,7 @@ from threading import Thread, Lock
 from urllib import request
 from urllib import parse
 
-__version__ = '1.0'
+__version__ = '1.1'
 
 
 class Luthor:
@@ -148,23 +150,34 @@ class Fetcher(Thread):
         Converts XML element to dict
         """
 
-        children = {}
-        for child in list(element):
+        children_elements = list(element)
+        children_tags = Counter([child.tag for child in children_elements])
+
+        children = dict()
+        for child in children_elements:
             tag = self.__strip_namespaces(child.tag)
-            if tag not in children:
-                children[tag] = []
-            children[tag].append(self.__to_dict(child))
+
+            # if child has more than one occurrence - make list of dicts
+            if children_tags[child.tag] > 1:
+                if tag not in children:
+                    children[tag] = []
+                children[tag].append(self.__to_dict(child))
+            # make dict if only one child for current parent tag
+            else:
+                children[tag] = self.__to_dict(child)
 
         attributes = {}
         for key, value in element.attrib.items():
             name = self.__strip_namespaces(key)
             attributes[name] = value
 
-        return {
-            "attributes": element.attrib,
-            "children": children,
-            "content": element.text.strip() if element.text else '',
+        result = {
+            "_attrs": attributes,
+            "_content": element.text.strip() if element.text else '',
         }
+        result.update(children)
+
+        return result
 
     def __strip_namespaces(self, text):
 
