@@ -6,13 +6,12 @@ import re
 from collections import Counter
 
 from lxml import etree
-from lxml.etree import XMLSyntaxError
 from threading import Thread, Lock
 
 from urllib import request
 from urllib import parse
 
-__version__ = '1.1.5'
+__version__ = '1.1.6'
 
 
 class Luthor:
@@ -138,13 +137,13 @@ class Fetcher(Thread):
                     with self._lock:
                         self._storage.add(element.sourceline)
                     # passing data to callback
-                    self._callback(self.__to_dict(element))
+                    self._callback(self.__get_result(element))
                 # removing element from memory
                 element.clear()
         except:
             pass
 
-    def __to_dict(self, element):
+    def __get_result(self, element):
 
         """
         Converts XML element to dict
@@ -161,10 +160,10 @@ class Fetcher(Thread):
             if children_tags[child.tag] > 1:
                 if tag not in children:
                     children[tag] = []
-                children[tag].append(self.__to_dict(child))
+                children[tag].append(self.__get_result(child))
             # make dict if only one child for current parent tag
             else:
-                children[tag] = self.__to_dict(child)
+                children[tag] = self.__get_result(child)
 
         attributes = {}
         for key, value in element.attrib.items():
@@ -194,10 +193,30 @@ class Result(dict):
     """ Dict-like object with special methods """
 
     def content(self):
+
+        """
+        Get content
+        """
+
         return self.__getitem__('_content')
 
-    def attrs(self):
-        return self.__getitem__('_attrs')
+    def attrs(self, key=None):
+
+        """
+        Get attrs
+        """
+
+        return self.__getitem__('_attrs') if not key else self.__getitem__('_attrs')[key]
+
+    def __iter__(self):
+        for key in self.keys():
+            yield key
+
+    def keys(self):
+        return [key for key in super().keys() if key not in ['_attrs', '_content']]
+
+    def items(self):
+        return [(key, value) for key, value in super().items() if key not in ['_attrs', '_content']]
 
 
 class SyncStorage:
