@@ -12,7 +12,7 @@ from threading import Thread, Lock
 from urllib import request
 from urllib import parse
 
-__version__ = '1.1'
+__version__ = '1.1.5'
 
 
 class Luthor:
