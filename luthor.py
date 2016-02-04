@@ -6,12 +6,13 @@ import re
 from collections import Counter
 
 from lxml import etree
+from lxml.etree import XMLSyntaxError
 from threading import Thread, Lock
 
 from urllib import request
 from urllib import parse
 
-__version__ = '1.1.6'
+__version__ = '1.1.7'
 
 
 class Luthor:
@@ -140,7 +141,7 @@ class Fetcher(Thread):
                     self._callback(self.__get_result(element))
                 # removing element from memory
                 element.clear()
-        except:
+        except XMLSyntaxError:
             pass
 
     def __get_result(self, element):
