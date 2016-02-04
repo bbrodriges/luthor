@@ -12,7 +12,7 @@ from threading import Thread, Lock
 from urllib import request
 from urllib import parse
 
-__version__ = '1.1.7'
+__version__ = '1.1.8'
 
 
 class Luthor:
@@ -26,6 +26,8 @@ class Luthor:
         'with_lock': True,
         'strip_namespaces': False,
     }
+
+    _last_line = 0
 
     def extend(self, settings):
 
@@ -94,13 +96,30 @@ class Luthor:
                 'storage': self._storage,
                 'lock': lock,
                 'callback': self._callback,
-                'strip_namespaces': self._settings['strip_namespaces']
+                'strip_namespaces': self._settings['strip_namespaces'],
+                'last_line_fn': self.__set_last_line,
             })
             thread.start()
             active_threads.append(thread)
 
         for thread in active_threads:
             thread.join()
+
+    def __set_last_line(self, lineno):
+
+        """
+        Sets last line no.
+        """
+
+        self._last_line = lineno
+
+    def last_line(self):
+
+        """
+        Gets last line no.
+        """
+
+        return self._last_line
 
 
 class Fetcher(Thread):
@@ -122,6 +141,7 @@ class Fetcher(Thread):
         self._lock = settings['lock']
         self._callback = settings['callback']
         self._strip_namespaces = settings['strip_namespaces']
+        self._last_line_fn = settings['last_line_fn']
 
         self._strip_ns_re = re.compile(r'({.*?})')
 
@@ -137,6 +157,7 @@ class Fetcher(Thread):
                     # saving sourceline
                     with self._lock:
                         self._storage.add(element.sourceline)
+                        self._last_line_fn(element.sourceline)
                     # passing data to callback
                     self._callback(self.__get_result(element))
                 # removing element from memory
