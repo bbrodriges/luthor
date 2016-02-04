@@ -141,7 +141,7 @@ class Fetcher(Thread):
                     self._callback(self.__to_dict(element))
                 # removing element from memory
                 element.clear()
-        except XMLSyntaxError:
+        except:
             pass
 
     def __to_dict(self, element):
@@ -171,10 +171,11 @@ class Fetcher(Thread):
             name = self.__strip_namespaces(key)
             attributes[name] = value
 
-        result = {
+        result = Result()
+        result.update({
             "_attrs": attributes,
             "_content": element.text.strip() if element.text else '',
-        }
+        })
         result.update(children)
 
         return result
@@ -186,6 +187,17 @@ class Fetcher(Thread):
         """
 
         return text if not self._strip_namespaces else re.sub(self._strip_ns_re, '', text)
+
+
+class Result(dict):
+
+    """ Dict-like object with special methods """
+
+    def content(self):
+        return self.__getitem__('_content')
+
+    def attrs(self):
+        return self.__getitem__('_attrs')
 
 
 class SyncStorage:
