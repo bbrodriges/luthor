@@ -12,7 +12,7 @@ from threading import Thread, Lock
 from urllib import request
 from urllib import parse
 
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 
 
 class Luthor:
@@ -225,13 +225,21 @@ class Result(dict):
 
         return self.__getitem__('_content')
 
-    def attrs(self, key=None):
+    def attrs(self):
 
         """
         Get attrs
         """
 
-        return self.__getitem__('_attrs') if not key else self.__getitem__('_attrs')[key]
+        return self.__getitem__('_attrs')
+
+    def attr(self, key):
+
+        """
+        Get attr
+        """
+
+        return self.__getitem__('_attrs')[key]
 
     def __iter__(self):
         for key in self.keys():
