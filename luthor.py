@@ -12,7 +12,7 @@ from threading import Thread, Lock
 from urllib import request
 from urllib import parse
 
-__version__ = '1.2.1'
+__version__ = '1.2.5'
 
 
 class Luthor:
@@ -175,20 +175,13 @@ class Fetcher(Thread):
         """
 
         children_elements = list(element)
-        children_tags = Counter([child.tag for child in children_elements])
 
         children = dict()
         for child in children_elements:
             tag = self.__strip_namespaces(child.tag)
-
-            # if child has more than one occurrence - make list of dicts
-            if children_tags[child.tag] > 1:
-                if tag not in children:
-                    children[tag] = []
-                children[tag].append(self.__get_result(child))
-            # make dict if only one child for current parent tag
-            else:
-                children[tag] = self.__get_result(child)
+            if tag not in children:
+                children[tag] = Tags()
+            children[tag].append(self.__get_result(child))
 
         attributes = {}
         for key, value in element.attrib.items():
@@ -250,6 +243,35 @@ class Result(dict):
 
     def items(self):
         return [(key, value) for key, value in super().items() if key not in ['_attrs', '_content']]
+
+
+class Tags(list):
+
+    """ List-like object with special methods """
+
+    def content(self):
+
+        """
+        Get content
+        """
+
+        return super().__getitem__(0).content()
+
+    def attrs(self):
+
+        """
+        Get attrs
+        """
+
+        return super().__getitem__(0).attrs()
+
+    def attr(self, key):
+
+        """
+        Get attr
+        """
+
+        return super().__getitem__(0).attr(key)
 
 
 class SyncStorage:

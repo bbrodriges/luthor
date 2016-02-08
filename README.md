@@ -52,7 +52,9 @@ While inherit Luthor class you can override built-in `get_record()` method to re
 
 * _attrs _dict_ - Attributes of tag. You can also use alias method ```attrs()```. Default: `{}`
 * _content _str_ - Content of tag. You can also use alias method ```content()```. Default: `''`
-* **child tags** - child tags includes into parent tag dict under corresponding keys. If there is only one child tag it will be dict, if there are multiple tags they would be list of dicts. 
+* **child tags** - child tags includes into parent tag dict under corresponding keys. Default: `[]`
 
 # Tips and tricks
-You can use ```last_line()``` parser method to get line number of last accessed tag as pass it again to new instance of parser in case of some fatal exception or error.
+* Use ```.content()```, ```.attrs()``` and ```.attr('attr_name')``` to get corresponding data from result tags.
+* You can also use methods listed above on lists of tags. In this case you will get corresponding data from first tag in list.
+* You can use ```last_line()``` parser method to get line number of last accessed tag as pass it again to new instance of parser in case of some fatal exception or error.
