@@ -57,4 +57,5 @@ While inherit Luthor class you can override built-in `get_record()` method to re
 # Tips and tricks
 * Use ```.content()```, ```.attrs()``` and ```.attr('attr_name')``` to get corresponding data from result tags.
 * You can also use methods listed above on lists of tags. In this case you will get corresponding data from first tag in list.
+* Tags lists also have two special methods ```.children('tag_name')``` and ```.child('tag_name')```. Children method will return children tags under corresponding key for first parent tag in list. Child method is a shorthand to children.
 * You can use ```last_line()``` parser method to get line number of last accessed tag as pass it again to new instance of parser in case of some fatal exception or error.

@@ -12,7 +12,7 @@ from threading import Thread, Lock
 from urllib import request
 from urllib import parse
 
-__version__ = '1.2.5'
+__version__ = '1.2.6'
 
 
 class Luthor:
@@ -272,6 +272,22 @@ class Tags(list):
         """
 
         return super().__getitem__(0).attr(key)
+
+    def children(self, key):
+
+        """
+        Get children of first tag
+        """
+
+        return super().__getitem__(0)[key]
+
+    def child(self, key):
+
+        """
+        Alias to children
+        """
+
+        return self.children(key)
 
 
 class SyncStorage:
